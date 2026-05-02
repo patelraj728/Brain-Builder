@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo Session | Brain Builder</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --primary: #4ba0f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bonus-gold: #d4af37;
+            --bonus-bg: #fffdf2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--bg); 
+            color: var(--ink); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            transition: background 0.5s ease;
+        }
+
+        body.bonus-mode { background: #1a1a1a; }
+
+        /* --- QUIZ CARD --- */
+        .quiz-card {
+            background: var(--surface);
+            width: 100%;
+            max-width: 700px;
+            padding: 48px;
+            border-radius: 32px;
+            border: 1px solid var(--line);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        body.bonus-mode .quiz-card {
+            background: var(--bonus-bg);
+            border: 4px solid var(--bonus-gold);
+            transform: scale(1.02);
+        }
+
+        /* --- TOP BAR --- */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .stat-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-active { color: var(--ink); border: 1px solid var(--line); }
+        .timer-danger { 
+            background: #fee2e2; 
+            color: var(--danger); 
+            border-color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* --- PROGRESS --- */
+        .progress-section { margin-bottom: 40px; }
+        .progress-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .progress-track {
+            height: 6px;
+            background: var(--line);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--ink);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.bonus-mode .progress-bar { background: var(--bonus-gold); }
+
+        /* --- QUESTION TEXT --- */
+        .question-area { min-height: 180px; }
+        
+        #bonus-tag {
+            display: none;
+            text-align: center;
+            color: var(--bonus-gold);
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        body.bonus-mode #bonus-tag { display: block; }
+
+        h2#question {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin-bottom: 40px;
+        }
+
+        /* --- OPTIONS --- */
+        .options-grid { display: grid; gap: 12px; }
+
+        .option-btn {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            padding: 20px 24px;
+            border-radius: 16px;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--bg);
+            border-color: var(--ink);
+            transform: translateX(4px);
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+
+        /* Feedback States */
+        .option-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: var(--success) !important;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+            color: var(--danger) !important;
+        }
+
+        /* --- ANIMATIONS --- */
+        .fade-out { opacity: 0; transform: translateY(-10px); }
+        .fade-in { animation: fadeInUp 0.5s forwards; }
+
+        @media (max-width: 600px) {
+            .quiz-card { padding: 24px; border-radius: 0; min-height: 100vh; border: none; }
+            h2#question { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-card animate__animated animate__zoomIn" id="quizCard">
+        
+        <header class="quiz-header">
+            <div class="stat-badge timer-active" id="timer-badge">
+                <span id="timer-text">30s</span>
+            </div>
+            <div class="stat-badge">
+                ⭐ SCORE: <span id="score-display" style="margin-left: 5px; font-weight: 900;">0</span>
+            </div>
+        </header>
+
+        <div class="progress-section">
+            <span class="progress-label" id="progress-text">Loading...</span>
+            <div class="progress-track">
+                <div class="progress-bar" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="question-area" id="question-wrapper">
+            <p id="bonus-tag">🏆 Bonus Round</p>
+            <h2 id="question">Preparing your session...</h2>
+            
+            <div class="options-grid" id="options-container">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let totalQuestions = "{{ totalquestions }}"; 
+
+        const timerText = document.getElementById("timer-text");
+        const timerBadge = document.getElementById("timer-badge");
+        const questionWrapper = document.getElementById("question-wrapper");
+        const questionEl = document.getElementById("question");
+        const optionsContainer = document.getElementById("options-container");
+        const scoreDisplay = document.getElementById("score-display");
+        const progressText = document.getElementById("progress-text");
+        const progressFill = document.getElementById("progress-fill");
+
+        function updateProgress() {
+            let progressPercent = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progressText.innerText = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            progressFill.style.width = `${progressPercent}%`;
+        }
+
+        function startTimer(duration) {
+            clearInterval(timerInterval);
+            let timeLeft = duration;
+            timerBadge.className = "stat-badge timer-active";
+            timerText.innerText = timeLeft + "s";
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.innerText = timeLeft + "s";
+                if (timeLeft <= 5) timerBadge.classList.add("timer-danger");
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmit();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            questionWrapper.classList.add("fade-out");
+
+            fetch("/solo/get_question", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ index: currentQuestionIndex }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    finishQuiz();
+                    return;
+                }
+
+                setTimeout(() => {
+                    updateProgress();
+                    
+                    // Bonus Mode Theme Toggle
+                    if (data.questionsBonus) {
+                        document.body.classList.add("bonus-mode");
+                    } else {
+                        document.body.classList.remove("bonus-mode");
+                    }
+
+                    questionEl.innerText = data.text;
+                    startTimer(data.time_limit);
+                    
+                    optionsContainer.innerHTML = "";
+                    data.option_texts.forEach((text, idx) => {
+                        const btn = document.createElement("button");
+                        btn.className = "option-btn";
+                        btn.innerHTML = `<span>${text}</span> <span class="indicator"></span>`;
+                        btn.onclick = () => handleChoice(btn, data.option_ids[idx]);
+                        optionsContainer.appendChild(btn);
+                    });
+
+                    questionWrapper.classList.remove("fade-out");
+                }, 400); 
+            });
+        }
+
+        async function handleChoice(btn, optionId) {
+            clearInterval(timerInterval);
+            
+            // UI Lockdown
+            const allBtns = optionsContainer.querySelectorAll(".option-btn");
+            allBtns.forEach(b => b.disabled = true);
+
+            // Verify with Server
+            const res = await fetch("/solo/check_answer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ selected_id: optionId, current_score: score }),
+            });
+            const result = await res.json();
+            
+            const isCorrect = result.score > score;
+            score = result.score;
+            scoreDisplay.innerText = score;
+
+            // Visual Feedback
+            btn.classList.add(isCorrect ? "correct" : "wrong");
+            btn.querySelector(".indicator").innerText = isCorrect ? "✓" : "✕";
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 800);
+        }
+
+        function autoSubmit() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            fetch("/solo/result", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ totalscore: score }),
+            }).then(() => window.location.href = "/solo/result");
+        }
+
+        document.addEventListener("DOMContentLoaded", loadQuestion);
+    </script>
+</body>
+</html>

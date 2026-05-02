@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Brain Builder</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Match */
+        .navbar {
+            padding: 30px 5%;
+            display: flex;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.02em;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Form Elements */
+        .form-item {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-item label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .form-item input {
+            width: 100%;
+            padding: 16px;
+            background: var(--field);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--ink);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-item input:focus {
+            background: var(--surface);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .forgot_password {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            text-align: right;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot_password:hover { color: var(--accent); }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--ink);
+            color: var(--bg);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            margin: 15px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--line);
+            z-index: 1;
+        }
+
+        .divider span {
+            background: var(--surface);
+            padding: 0 16px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface);
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .btn-google:hover {
+            background: var(--field);
+            border-color: #d1d5db;
+        }
+
+        .btn-google img { width: 18px; }
+
+        .signup-prompt {
+            margin-top: 32px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .signup-prompt a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .signup-prompt a:hover {
+            text-decoration: underline;
+        }
+        em{
+            color: #ff5b2e;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .login-card { padding: 32px 24px; border: none; background: transparent; box-shadow: none; }
+            .navbar { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar animate__animated animate__fadeInDown">
+        <div class="logo">Brain <em>Builder</em></div>
+    </header>
+
+    <main class="main-wrapper">
+        <section class="login-card animate__animated animate__zoomIn">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to continue your journey</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('login') }}" class="login-form">
+                <div class="form-item">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="name@example.com" required />
+                </div>
+
+                <div class="form-item">
+                    <label for="password">Password</label>
+                    <div class="input-container">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required />
+                        <button type="button" class="toggle-btn" onclick="togglePassword()">Show</button>
+                    </div>
+                    <a href="{{ url_for('login.verify_email_page')}}" class="forgot_password">Forgot Password?</a>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% for category, message in messages %}
+                        <p style="color: #e53e3e; text-align: center; font-size: 0.85rem; margin-bottom: 15px; font-weight: 600;">{{ message }}</p>
+                    {% endfor %}
+                {% endwith %}
+
+                <button type="submit" class="btn-primary">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <div class="social-login">
+                <a href="{{ url_for('login.google_login') }}" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                    Continue with Google
+                </a>
+            </div>
+
+            <p class="signup-prompt">
+                New here? <a href="{{ url_for('login.create_user') }}">Create account</a>
+            </p>
+        </section>
+    </main>
+
+    <script>
+        function togglePassword() {
+            const passField = document.getElementById("password");
+            const btn = event.target;
+            if (passField.type === "password") {
+                passField.type = "text";
+                btn.textContent = "Hide";
+            } else {
+                passField.type = "password";
+                btn.textContent = "Show";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Brain Builder</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --accent: #4ba0f0;
+            --accent-soft: #eff6ff;
+            --secondary: #f78e4d;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--ink); 
+            min-height: 100vh; 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- BACKGROUND BLOBS --- */
+        .bg-blob { position: fixed; width: 40vw; height: 40vw; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.15; }
+        .blob-1 { background: var(--accent); top: -10%; left: -10%; }
+        .blob-2 { background: var(--secondary); bottom: -10%; right: -10%; }
+
+        /* --- NAVIGATION --- */
+        .navbar { 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--line);
+            position: sticky; top: 0; z-index: 100; 
+        }
+
+        .logo { 
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem; font-weight: 700; 
+            letter-spacing: -0.02em;
+        }
+        em{
+            color: #f78e4d;
+        }
+        .nav-actions { display: flex; gap: 12px; }
+
+        .btn-nav {
+            text-decoration: none; font-weight: 700; font-size: 0.75rem;
+            padding: 8px 16px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            transition: 0.2s; border: 1px solid var(--line);
+            color: var(--ink); display: flex; align-items: center; gap: 6px;
+        }
+
+        .btn-nav:hover { background: var(--ink); color: white; border-color: var(--ink); }
+        .logout-btn:hover { background: var(--danger); border-color: var(--danger); color: white; }
+
+        /* --- USER PROFILE SECTION --- */
+        .container { max-width: 850px; margin: 40px auto; padding: 0 20px; }
+
+        .profile-header {
+            display: flex; align-items: center; gap: 24px;
+            margin-bottom: 40px; padding: 32px;
+            background: var(--surface); border-radius: 24px;
+            border: 1px solid var(--line);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .avatar-circle {
+            width: 70px; height: 70px;
+            background: var(--ink); color: white;
+            border-radius: 20px; display: flex;
+            align-items: center; justify-content: center;
+            font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 700;
+        }
+
+        .profile-text h1 {
+            font-family: 'Fraunces', serif; font-size: 2rem;
+            letter-spacing: -0.02em; line-height: 1.2;
+        }
+
+        .profile-text p { color: var(--muted); font-weight: 500; font-size: 0.9rem; }
+
+        /* --- TABS --- */
+        .tabs {
+            display: flex; background: #eeebe6;
+            padding: 4px; border-radius: 12px; margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            flex: 1; padding: 12px; border: none; border-radius: 10px;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            background: transparent; color: var(--muted); transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--surface); color: var(--ink);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .user-name{
+            color: #f78e4d;
+            font-family: 'Fraunces', serif;
+        }
+        /* --- CARDS --- */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .grid-list { display: grid; gap: 16px; }
+
+        .editorial-card {
+            background: var(--surface); padding: 24px;
+            border-radius: 20px; border: 1px solid var(--line);
+            transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; overflow: hidden;
+        }
+
+        .editorial-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+
+        .category-tag {
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--muted);
+        }
+
+        .score-pill {
+            font-family: 'Fraunces', serif; font-weight: 800;
+            font-size: 1.2rem; color: var(--accent);
+        }
+
+        .card-title {
+            font-family: 'Fraunces', serif; font-size: 1.3rem;
+            margin-bottom: 8px; font-weight: 700;
+        }
+
+        .meta-info {
+            display: flex; gap: 16px; font-size: 0.8rem;
+            font-weight: 600; color: var(--muted);
+        }
+
+        .card-actions {
+            margin-top: 20px; padding-top: 20px;
+            border-top: 1px solid var(--line);
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-action {
+            text-decoration: none; padding: 8px 16px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 700; transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; border: 1px solid var(--line);
+            background: var(--field); color: var(--ink);
+        }
+        
+        .btn-action:hover { border-color: var(--ink); background: var(--field); }
+        .btn-host-primary { background: var(--ink); color: white; border-color: var(--ink); }
+        .btn-host-primary:hover { opacity: 0.9; color: var(--ink); }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            text-align: center; padding: 80px 20px;
+            background: var(--surface); border-radius: 24px; border: 1px dashed var(--line);
+        }
+
+        .empty-state span { font-size: 3rem; display: block; margin-bottom: 16px; }
+        
+        @media (max-width: 600px) {
+            .profile-header { flex-direction: column; text-align: center; }
+            .meta-info { flex-wrap: wrap; }
+            .card-actions { flex-direction: column; }
+            .btn-action { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <header class="navbar animate__animated animate__fadeInDown">
+        <div class="logo">Brain <em>Builder</em></div>
+        <div class="nav-actions">
+            <a href="{{ url_for('login.home') }}" class="btn-nav">Home</a>
+            <a href="{{ url_for('login.logout') }}" class="btn-nav logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="profile-header animate__animated animate__fadeInUp">
+            <div class="avatar-circle">{{ session.get('email')[0] | upper }}</div>
+            <div class="profile-text">
+                <p>MEMBER DASHBOARD</p>
+                <h1>Welcome back, <span class="user-name">{{ session.get('email').split('@')[0] }}</span></h1>
+            </div>
+        </section>
+
+        <nav class="tabs animate__animated animate__fadeIn">
+            <button class="tab-btn active" onclick="switchTab('results', this)">📊 Activity History</button>
+            <button class="tab-btn" onclick="switchTab('quizzes', this)">📝 Managed Content</button>
+        </nav>
+
+        <div id="tab-results" class="tab-panel active">
+            <div class="grid-list">
+                {% if data %}
+                    {% for d in data %}
+                    <article class="editorial-card animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+                        <div class="card-top">
+                            <span class="category-tag">
+                                {{ 'Solo Play' if not d.session_id else 'Multiplayer Session' }}
+                            </span>
+                            <span class="score-pill">{{ d.total_score }} pts</span>
+                        </div>
+                        <h3 class="card-title">Quiz Attempt #{{ d.quiz_id }}</h3>
+                        <div class="meta-info">
+                            <span>📅 {{ d.played_at.strftime('%d %b %Y') if d.played_at else 'Recent' }}</span>
+                            {% if d.session_id %}
+                            <span>🆔 Room: {{ d.session_id }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if d.session_id %}
+                        <div class="card-actions">
+                            <a href="{{ url_for('login.profile_session_detail', session_id=d.session_id) }}" class="btn-action">
+                                📋 View Full Report
+                            </a>
+                        </div>
+                        {% endif %}
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <span>🎯</span>
+                        <p style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;">No history yet</p>
+                        <p style="color: var(--muted);">Join a quiz to see your scores here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="tab-quizzes" class="tab-panel">
+            <div class="grid-list">
+                {% if quizes %}
+                    {% for q in quizes %}
+                    <article class="editorial-card animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+                        <div class="card-top">
+                            <span class="category-tag">Author Resource</span>
+                            <span class="category-tag" style="color: var(--accent);">ID #{{ q.id }}</span>
+                        </div>
+                        <h3 class="card-title">{{ q.title if q.title else 'Untitled Collection' }}</h3>
+                        <div class="meta-info">
+                            <span>📋 {{ q.questions | length }} Questions</span>
+                            <span>🕒 Created {{ q.created_at.strftime('%b %Y') if q.created_at else 'Recently' }}</span>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{{ url_for('login.view_quiz', quiz_id=q.id) }}" class="btn-action">View</a>
+                            <a href="{{ url_for('login.edit_quiz', quiz_id=q.id) }}" class="btn-action">Edit</a>
+                            <form method="post" action="{{url_for('host.host')}}" style="margin:0;">
+                                <input type="hidden" name="quizes" value="{{q.id}}">
+                                <button type="submit" class="btn-action btn-host-primary">🚀 Host Live</button>
+                            </form>
+                        </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <span>📭</span>
+                        <p style="font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700;">No quizzes found</p>
+                        <p style="color: var(--muted);">Ready to challenge others? Create your first quiz.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

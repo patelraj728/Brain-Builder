@@ -1,0 +1,186 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-header">
+    <div class="brand-group">
+      <span class="brand-name">Brain <em>Builder</em></span>
+      <span class="brand-suffix">Admin Studio</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Management</div>
+    
+    <a href="{{ url_for('admin.dashboard') }}" 
+       class="nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+      <span class="nav-icon">📊</span> 
+      <span class="nav-label">Overview</span>
+    </a>
+
+    <a href="{{ url_for('admin.users') }}" 
+       class="nav-item {% if 'users' in request.endpoint %}active{% endif %}">
+      <span class="nav-icon">👥</span> 
+      <span class="nav-label">Users</span>
+    </a>
+
+    <a href="{{ url_for('admin.quiz_questions', quiz_id=1) }}" 
+       class="nav-item {% if 'question' in request.endpoint %}active{% endif %}">
+      <span class="nav-icon">📂</span> 
+      <span class="nav-label">Question Bank</span>
+    </a>
+
+    <a href="{{ url_for('admin.sessions') }}" 
+       class="nav-item {% if 'session' in request.endpoint %}active{% endif %}">
+      <span class="nav-icon">⚡</span> 
+      <span class="nav-label">Live Sessions</span>
+    </a>
+
+    <div class="nav-spacer"></div>
+    <hr class="nav-divider"/>
+    
+    <a href="{{ url_for('login.home') }}" class="nav-item exit-link">
+      <span class="nav-icon">⇠</span> 
+      <span class="nav-label">Exit to Site</span>
+    </a>
+  </nav>
+</aside>
+
+<style>
+  :root {
+    /* Admin palette: slightly deeper for a "Control Room" feel */
+    --admin-bg: #111111;
+    --admin-surface: #1a1a1a;
+    --admin-ink: #ffffff;
+    --admin-muted: #888888;
+    --admin-accent: #4ba0f0;
+    --admin-border: #2a2a2a;
+  }
+
+  .admin-sidebar {
+    width: 280px;
+    height: 100vh;
+    background: var(--admin-bg);
+    color: var(--admin-ink);
+    display: flex;
+    flex-direction: column;
+    padding: 40px 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-right: 1px solid var(--admin-border);
+  }
+
+  /* --- HEADER --- */
+  .sidebar-header {
+    padding: 0 32px;
+    margin-bottom: 48px;
+  }
+
+  .brand-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .brand-suffix {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--admin-muted);
+    margin-top: 6px;
+  }
+
+  /* --- NAVIGATION --- */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 16px;
+  }
+
+  .nav-section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--admin-muted);
+    padding: 0 16px;
+    margin-bottom: 16px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--admin-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .nav-item:hover {
+    color: var(--admin-ink);
+    background: var(--admin-surface);
+  }
+
+  .nav-item.active {
+    color: var(--admin-ink);
+    background: var(--admin-surface);
+  }
+
+  /* The Editorial "Active Line" */
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 25%;
+    height: 50%;
+    width: 4px;
+    background: var(--admin-accent);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .nav-icon {
+    font-size: 1.1rem;
+    margin-right: 14px;
+    filter: grayscale(1); /* Keeps emojis from being too distracting */
+    transition: filter 0.3s;
+  }
+
+  .nav-item:hover .nav-icon,
+  .nav-item.active .nav-icon {
+    filter: grayscale(0);
+  }
+
+  .nav-spacer { flex-grow: 1; }
+
+  .nav-divider {
+    border: 0;
+    border-top: 1px solid var(--admin-border);
+    margin: 16px 16px;
+  }
+
+  .exit-link {
+    color: var(--admin-accent);
+    opacity: 0.8;
+  }
+
+  .exit-link:hover {
+    opacity: 1;
+    background: transparent;
+    transform: translateX(-4px);
+  }
+  em{
+    color: #ff5b2e;
+  }
+</style>

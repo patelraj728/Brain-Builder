@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Setup | Brain Builder</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --accent: #4ba0f0;
+            --focus-bg: #f3f9ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--bg); 
+            color: var(--ink); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* --- DECORATIVE BACKGROUND --- */
+        .bg-blob { position: fixed; width: 40vw; height: 40vw; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.08; }
+        .blob-left { background: var(--accent); top: -10%; left: -10%; }
+        .blob-right { background: #f78e4d; bottom: -10%; right: -10%; }
+
+        /* --- SETUP CARD --- */
+        .setup-card {
+            background: var(--surface);
+            width: 100%;
+            max-width: 500px;
+            padding: 60px 50px;
+            border-radius: 40px;
+            border: 1px solid var(--line);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.03);
+            position: relative;
+            z-index: 10;
+        }
+
+        header { text-align: center; margin-bottom: 45px; }
+        
+        .icon-circle {
+            width: 60px; height: 60px;
+            background: var(--bg);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 20px;
+            border: 1px solid var(--line);
+        }
+
+        h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .input-group {
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.2s; }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .select-wrapper { position: relative; }
+
+        select {
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--ink);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231a1a1a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 16px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--ink);
+            background-color: var(--surface);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* --- SUBMIT BUTTON --- */
+        .submit-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 20px;
+            border: none;
+            background: var(--ink);
+            color: white;
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            background: #333;
+        }
+
+        .submit-btn:active { transform: translateY(0); }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 550px) {
+            .setup-card { border: none; box-shadow: none; background: transparent; padding: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-blob blob-left"></div>
+    <div class="bg-blob blob-right"></div>
+
+    <main class="setup-card animate__animated animate__fadeIn">
+        <header>
+            <div class="icon-circle">👤</div>
+            <h2>Solo Session</h2>
+            <p class="subtitle">Curate your challenge</p>
+        </header>
+
+        <form method="post">
+            <div class="input-group">
+                <label for="category">Topic of interest</label>
+                <div class="select-wrapper">
+                    <select name="category" id="category" required>
+                        <option value="" disabled selected hidden>Choose a topic...</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="num">Question Volume</label>
+                <div class="select-wrapper">
+                    <select name="num" id="num">
+                        <option value="1">Select category first</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Begin Session
+            </button>
+        </form>
+    </main>
+
+    <script>
+        document.getElementById("category").addEventListener("change", function () {
+            let selectedCategory = this.value;
+            let numSelect = document.getElementById("num");
+            
+            // Subtle loading state
+            numSelect.innerHTML = "<option>Syncing...</option>";
+
+            fetch(`/solo/get_num_questions?category=${selectedCategory}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    numSelect.innerHTML = "";
+                    for (let i = 1; i <= data.count; i++) {
+                        let option = document.createElement("option");
+                        option.value = i;
+                        option.text = i + (i === 1 ? " Question" : " Questions");
+                        if(i === Math.min(10, data.count)) option.selected = true; 
+                        numSelect.appendChild(option);
+                    }
+                })
+                .catch(err => {
+                    numSelect.innerHTML = "<option value='1'>1 Question</option>";
+                    console.error("Error fetching question count:", err);
+                });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <title>Host Live Quiz | Brain Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            
+            /* Modernized Quiz Colors */
+            --opt-a: #ff5b2e; /* Brand orange */
+            --opt-b: #2e86ff; /* Clean Blue */
+            --opt-c: #10b981; /* Emerald */
+            --opt-d: #8b5cf6; /* Purple */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOP BAR OVERHAUL */
+        .top-bar {
+            background: var(--surface);
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em { font-style: italic; color: var(--accent); }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .timer-ring {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            background: var(--field);
+        }
+        .timer-ring span { 
+            position: relative; z-index: 1; 
+            font-family: 'Fraunces', serif;
+            font-weight: 700; font-size: 1.1rem; 
+        }
+
+        .answer-count { 
+            font-size: 0.8rem; 
+            color: var(--muted); 
+            text-align: right; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .answer-count strong { display: block; font-size: 1.2rem; color: var(--ink); }
+
+        /* MAIN AREA */
+        .main {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 40px 24px;
+            max-width: 1000px; margin: 0 auto; width: 100%;
+        }
+
+        #question-box {
+            font-family: 'Fraunces', serif;
+            background: var(--surface); border-radius: 24px;
+            padding: 48px; width: 100%;
+            text-align: center; font-size: 2.2rem; font-weight: 700; line-height: 1.2;
+            margin-bottom: 32px; border: 1px solid var(--line);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 16px; width: 100%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .option-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px; padding: 24px; 
+            font-size: 1.1rem; font-weight: 600;
+            display: flex; align-items: center; gap: 16px;
+            color: var(--ink);
+            transition: transform 0.2s;
+        }
+        
+        .shape {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .option-card:nth-child(1) .shape { background: var(--opt-a); }
+        .option-card:nth-child(2) .shape { background: var(--opt-b); }
+        .option-card:nth-child(3) .shape { background: var(--opt-c); }
+        .option-card:nth-child(4) .shape { background: var(--opt-d); }
+
+        /* SCOREBOARD OVERLAY (MODERNIZED) */
+        #scoreboard-overlay {
+            display: none; position: fixed; inset: 0;
+            background: var(--bg); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px 24px; animation: fadeIn 0.4s ease;
+        }
+        #scoreboard-overlay.visible { display: flex; }
+
+        .scoreboard-title {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5rem; font-weight: 700; color: var(--ink);
+            margin-bottom: 40px;
+        }
+
+        .scoreboard-list {
+            width: 100%; max-width: 600px;
+            display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px;
+        }
+
+        .score-row {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--surface); border-radius: 16px; padding: 16px 24px;
+            border: 1px solid var(--line);
+            animation: fadeInUp 0.4s ease both;
+        }
+
+        .rank { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 800; width: 40px; color: var(--muted); }
+        .player-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
+        .score-val { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+
+        .score-bar-wrap { flex: 2; height: 8px; background: var(--field); border-radius: 10px; overflow: hidden; margin: 0 10px; }
+        .score-bar { height: 100%; background: var(--ink); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        /* BUTTONS & FOOTER */
+        .bottom-bar {
+            background: var(--surface); padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--line);
+        }
+
+        .btn-primary {
+            background: var(--ink); color: var(--bg);
+            border: none; border-radius: 12px; padding: 14px 32px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); background: #000; }
+        .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #waiting-screen { text-align: center; padding-top: 100px; }
+        #waiting-screen h2 { font-family: 'Fraunces', serif; font-size: 2.5rem; margin-bottom: 12px; }
+
+        #finished-screen {
+            display: none; position: fixed; inset: 0; background: var(--bg);
+            z-index: 200; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px;
+        }
+        #finished-screen.visible { display: flex; }
+        #finished-screen h1 { font-family: 'Fraunces', serif; font-size: 3.5rem; color: var(--ink); margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="brand-text">Brain<em>Builder</em></div>
+    <div class="timer-container">
+        <div class="timer-ring" id="timer-ring"><span id="timer-text">--</span></div>
+        <div class="answer-count">
+            <strong id="answered-count">0 / 0</strong>
+            Responses
+        </div>
+    </div>
+</div>
+
+<main class="main" id="question-area" style="display:none;">
+    <div id="question-box">Preparing...</div>
+    <div class="options-grid" id="options-grid"></div>
+</main>
+
+<div id="waiting-screen" class="main">
+    <div style="background: var(--accent-soft); padding: 8px 16px; border-radius: 99px; color: var(--accent); font-weight: 600; font-size: 0.8rem; margin-bottom: 16px; text-transform: uppercase;">Ready to begin?</div>
+    <h2>Waiting for Host</h2>
+    <p style="color: var(--muted);">The quiz will start as soon as you click next.</p>
+</div>
+
+<div id="scoreboard-overlay">
+    <h2 class="scoreboard-title">Standings</h2>
+    <div class="scoreboard-list" id="scoreboard-list"></div>
+    <button class="btn-primary" onclick="nextQuestion()" style="min-width: 200px;">Next Question →</button>
+</div>
+
+<div id="finished-screen">
+    <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
+    <h1>Quiz Complete</h1>
+    <p style="color: var(--muted); margin-bottom: 40px;">Here is how everyone performed:</p>
+    <div class="scoreboard-list" id="final-scoreboard-list"></div>
+    <a href="/" style="margin-top:32px;"><button class="btn-primary">Return Home</button></a>
+</div>
+
+<div class="bottom-bar">
+    <div style="flex: 1;">
+        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; font-weight: 600;" id="progress-label">SESSION STARTING</div>
+        <div style="height: 6px; background: var(--field); border-radius: 10px; width: 200px; overflow: hidden;">
+            <div id="progress-fill" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s;"></div>
+        </div>
+    </div>
+    <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>Start Quiz</button>
+</div>
+
+<script>
+var socketio = io();
+let timerInterval;
+let timeLeft = 0;
+let totalTime = 15;
+let totalPlayers = 0;
+let answeredPlayers = 0;
+let questionIndex = 0;
+let totalQuestions = 0;
+let currentScores = {};
+let scoreboardShown = false;
+
+socketio.on("connect", function(){
+    socketio.emit("host_live_ready");
+});
+
+function nextQuestion(){
+    document.getElementById("scoreboard-overlay").classList.remove("visible");
+    document.getElementById("waiting-screen").style.display = "none";
+    document.getElementById("question-area").style.display = "flex";
+    document.getElementById("next-btn").disabled = true;
+    answeredPlayers = 0;
+    scoreboardShown = false;
+    currentScores = {};
+    updateAnswerCount();
+    socketio.emit("next_question");
+}
+
+socketio.on("show_question", function(data){
+    questionIndex++;
+    totalQuestions = data.total_questions || totalQuestions;
+    totalPlayers = data.player_count || totalPlayers;
+    answeredPlayers = 0;
+    scoreboardShown = false;
+    updateAnswerCount();
+
+    document.getElementById("question-box").innerText = data.question;
+
+    const shapes = ["▲","◆","●","■"];
+    const grid = document.getElementById("options-grid");
+    grid.innerHTML = "";
+    data.options.forEach(function(opt, i){
+        const card = document.createElement("div");
+        card.className = "option-card";
+        card.innerHTML = `<div class="shape">${shapes[i]}</div><span>${opt.text}</span>`;
+        grid.appendChild(card);
+    });
+
+    document.getElementById("progress-label").innerText = `QUESTION ${questionIndex} OF ${totalQuestions}`;
+    document.getElementById("progress-fill").style.width = `${(questionIndex / totalQuestions) * 100}%`;
+
+    startTimer(data.time_limit || 15);
+    document.getElementById("next-btn").disabled = false;
+});
+
+function startTimer(seconds){
+    clearInterval(timerInterval);
+    totalTime = seconds;
+    timeLeft = seconds;
+    updateTimerRing();
+
+    timerInterval = setInterval(function(){
+        timeLeft--;
+        updateTimerRing();
+        if(timeLeft <= 0){
+            clearInterval(timerInterval);
+            if(!scoreboardShown){
+                scoreboardShown = true;
+                socketio.emit("time_up");
+            }
+        }
+    }, 1000);
+}
+
+function updateTimerRing(){
+    const pct = (timeLeft / totalTime) * 100;
+    const color = timeLeft <= 5 ? "var(--accent)" : "var(--ink)";
+    const ring = document.getElementById("timer-ring");
+    ring.style.background = `conic-gradient(${color} ${pct}%, var(--field) 0)`;
+    ring.querySelector("span").innerText = timeLeft;
+}
+
+function updateAnswerCount(){
+    document.getElementById("answered-count").innerText = `${answeredPlayers} / ${totalPlayers}`;
+}
+
+socketio.on("show_scoreboard", function(data){
+    currentScores = data.scores;
+    answeredPlayers = data.answered;
+    totalPlayers = data.total_players;
+    updateAnswerCount();
+
+    if(answeredPlayers >= totalPlayers && totalPlayers > 0 && !scoreboardShown){
+        clearInterval(timerInterval);
+        scoreboardShown = true;
+        setTimeout(function(){ showScoreboardOverlay(currentScores); }, 600);
+    }
+});
+
+socketio.on("show_scoreboard_all", function(data){
+    currentScores = data.scores;
+    scoreboardShown = true;
+    clearInterval(timerInterval);
+    showScoreboardOverlay(data.scores);
+});
+
+function showScoreboardOverlay(scores){
+    renderScoreList(scores, "scoreboard-list");
+    document.getElementById("scoreboard-overlay").classList.add("visible");
+}
+
+function renderScoreList(scores, containerId){
+    const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+    const maxScore = sorted.length > 0 ? sorted[0][1] : 1;
+    const medals = ["🥇","🥈","🥉"];
+
+    let html = "";
+    sorted.forEach(function([name, score], i){
+        const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+        html += `
+            <div class="score-row" style="animation-delay: ${i * 0.1}s">
+                <div class="rank">${medals[i] || (i+1)}</div>
+                <div class="player-name">${name}</div>
+                <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
+                <div class="score-val">${score}</div>
+            </div>`;
+    });
+    document.getElementById(containerId).innerHTML = html;
+}
+
+socketio.on("quiz_finished", function(data){
+    var scores = (data && data.scores) ? data.scores : data;
+    document.getElementById("question-area").style.display = "none";
+    document.getElementById("scoreboard-overlay").classList.remove("visible");
+    renderScoreList(scores, "final-scoreboard-list");
+    document.getElementById("finished-screen").classList.add("visible");
+});
+</script>
+</body>
+</html>

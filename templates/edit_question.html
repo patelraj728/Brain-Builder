@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Question | Brain Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            --bonus-bg: #fff8e1;
+            --bonus-ink: #8a6d00;
+        }
+
+        body { background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 5%;
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .brand-mark {
+            width: 38px; height: 38px;
+            border-radius: 11px;
+            background: var(--ink);
+            color: var(--bg);
+            display: grid;
+            place-items: center;
+            position: relative;
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+        .brand-mark::after {
+            content: '';
+            position: absolute;
+            right: -3px; bottom: -3px;
+            width: 11px; height: 11px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em { font-style: italic; color: var(--accent); }
+
+        .btn-back {
+            text-decoration: none;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 9px;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 0.85rem;
+            background: var(--surface);
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-back:hover { border-color: var(--ink); color: var(--accent); }
+
+        /* Main */
+        .container { max-width: 640px; margin: 40px auto; padding: 0 20px; }
+
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid var(--line);
+            position: relative;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 36px;
+            width: 56px; height: 4px;
+            background: var(--accent);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        h3 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.85rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 28px;
+        }
+        h3 em { font-style: italic; color: var(--accent); }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group > label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--field);
+            color: var(--ink);
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+            background: var(--surface);
+        }
+        .form-group textarea { resize: vertical; min-height: 90px; }
+
+        /* Options */
+        .options-edit { display: grid; gap: 10px; }
+        .option-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--field);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 8px 12px;
+            transition: border-color 0.15s;
+        }
+        .option-row:focus-within { border-color: var(--ink); background: var(--surface); }
+        .option-row input[type="text"] {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            color: var(--ink);
+            font-family: inherit;
+        }
+        .option-row input[type="text"]:focus { outline: none; }
+        .option-row input[type="radio"] {
+            width: 18px; height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Bonus checkbox */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bonus-bg);
+            border: 1px solid #f5e6a8;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: var(--bonus-ink);
+        }
+        .checkbox-row input {
+            width: 16px; height: 16px;
+            accent-color: var(--accent);
+        }
+        .checkbox-row label {
+            margin: 0 !important;
+            text-transform: none !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            color: inherit !important;
+            letter-spacing: 0 !important;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: var(--ink);
+            color: var(--bg);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 14px;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn-save:hover { opacity: 0.88; }
+        .btn-save:active { transform: translateY(1px); }
+
+        @media (max-width: 600px) {
+            .navbar { padding: 16px 20px; }
+            .card { padding: 28px 22px; border-radius: 16px; }
+            h3 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="brand" aria-label="Brain Builder home">
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-text">Brain<em>Builder</em></span>
+        </a>
+        <a href="{{ url_for('login.edit_quiz', quiz_id=quiz.id) }}" class="btn-back">← Back to Quiz</a>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="eyebrow">Editing</div>
+            <h3>Edit <em>question</em></h3>
+
+            <form method="post">
+                <div class="form-group">
+                    <label>Question text</label>
+                    <textarea name="question_text">{{ question.question_text }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Points</label>
+                    <input type="number" name="points" value="{{ question.points }}" min="1">
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" name="is_bonus" id="is_bonus" {{ 'checked' if question.is_bonus else '' }}>
+                        <label for="is_bonus">Bonus question (2× points) ✨</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Options — select correct answer</label>
+                    <div class="options-edit">
+                        {% for opt in question.options %}
+                        <div class="option-row">
+                            <input type="radio" name="correct_option" value="{{ loop.index0 }}" {{ 'checked' if opt.is_correct else '' }}>
+                            <input type="hidden" name="option_id" value="{{ opt.id }}">
+                            <input type="text" name="option_text" value="{{ opt.option_text }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">Save changes</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

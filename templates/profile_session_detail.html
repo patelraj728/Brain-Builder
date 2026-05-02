@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Quiz Report | Brain Builder</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --gold: #d4af37;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--ink); 
+            min-height: 100vh; 
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .navbar { 
+            background: var(--surface); 
+            padding: 1.2rem 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--line);
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+
+        .logo { 
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            letter-spacing: -0.02em;
+        }
+
+        .btn-outline { 
+            text-decoration: none; 
+            font-weight: 700; 
+            padding: 10px 20px; 
+            border-radius: 50px; 
+            border: 1px solid var(--line); 
+            color: var(--ink); 
+            font-size: 0.8rem; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s; 
+        }
+
+        .btn-outline:hover { background: var(--field); border-color: var(--ink); }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 24px; }
+
+        /* SESSION OVERVIEW CARD */
+        .report-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .report-header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--field);
+            margin-bottom: 16px;
+        }
+
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 32px;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-item label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-item p {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* TABLES */
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin: 48px 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
+
+        .data-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        
+        th { 
+            text-align: left; 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            color: var(--muted); 
+            text-transform: uppercase; 
+            padding: 16px 24px; 
+            background: var(--field);
+            letter-spacing: 0.05em;
+        }
+
+        td { padding: 18px 24px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+        
+        .is-me { background: var(--accent-soft); }
+        .is-me td { font-weight: 600; }
+
+        .rank-box {
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .medal-1 { color: var(--gold); }
+        .medal-2 { color: #94a3b8; }
+        .medal-3 { color: #b45309; }
+
+        /* ANSWER KEY SPECIFICS */
+        .pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .pill-correct { background: #dcfce7; color: var(--correct); }
+        .pill-wrong { background: #fee2e2; color: var(--wrong); }
+
+        .points-earned {
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            .grid-stats { grid-template-columns: 1fr 1fr; }
+            th:nth-child(4), td:nth-child(4) { display: none; } /* Hide correct/wrong text on mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar animate__animated animate__fadeInDown">
+        <div class="logo">Brain Builder</div>
+        <a href="{{ url_for('login.profile') }}" class="btn-outline">Return to Profile</a>
+    </header>
+
+    <main class="container">
+        
+        <div class="report-header animate__animated animate__fadeIn">
+            <span class="status-badge">{{ qs.status }}</span>
+            <h1>Performance Report</h1>
+            <p style="color: var(--muted); font-weight: 500;">{{ qs.quiz.title if qs.quiz else 'Untitled Session' }} • Room {{ qs.room_code }}</p>
+
+            <div class="grid-stats">
+                <div class="stat-item">
+                    <label>Your Rank</label>
+                    <p>#{{ result.rank if result and result.rank else '—' }}</p>
+                </div>
+                <div class="stat-item">
+                    <label>Final Score</label>
+                    <p style="color: var(--accent);">{{ result.total_score if result else '0' }}</p>
+                </div>
+                <div class="stat-item">
+                    <label>Accuracy</label>
+                    <p>{{ accuracy if accuracy else '—' }}%</p>
+                </div>
+                <div class="stat-item">
+                    <label>Date</label>
+                    <p style="font-family: 'Inter'; font-size: 0.9rem;">{{ result.played_at.strftime('%d %b %Y') if result and result.played_at else '—' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title animate__animated animate__fadeInUp" style="animation-delay: 0.1s">Session Standings</h2>
+        <div class="data-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>Participant</th>
+                        <th style="text-align: right;">Total Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in all_results %}
+                    <tr class="{{ 'is-me' if r.user_id == session.get('id') else '' }}">
+                        <td class="rank-box">
+                            <span class="medal-{{ loop.index }}">
+                                {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {{ r.user.name if r.user else 'Anonymous' }}
+                            {% if r.user_id == session.get('id') %} <span style="font-size: 0.7rem; vertical-align: middle; margin-left: 4px;">(YOU)</span>{% endif %}
+                        </td>
+                        <td style="text-align: right; font-weight: 800;">{{ r.total_score }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" style="text-align:center; padding: 40px; color: var(--muted);">No records found for this session.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if answers %}
+        <h2 class="section-title animate__animated animate__fadeInUp" style="animation-delay: 0.2s">Detailed Review</h2>
+        <div class="data-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Question Statement</th>
+                        <th>Result</th>
+                        <th style="text-align: right;">Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in answers %}
+                    <tr>
+                        <td style="font-weight: 700; color: var(--muted);">{{ loop.index }}</td>
+                        <td>
+                            <div style="font-weight: 600; margin-bottom: 4px;">{{ a.question.question_text[:100] }}{% if a.question.question_text|length > 100 %}...{% endif %}</div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">Choice: {{ a.selected_option.option_text if a.selected_option else 'Skipped' }}</div>
+                        </td>
+                        <td>
+                            <span class="pill {{ 'pill-correct' if a.is_correct else 'pill-wrong' }}">
+                                {{ 'CORRECT' if a.is_correct else 'INCORRECT' }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;" class="points-earned">+{{ a.points_earned }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <footer style="text-align: center; padding: 40px; color: var(--muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">
+        &copy; 2026 Brain Builder Editorial
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>500 | Something went wrong</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+:root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #ececec;
+    --accent: #ff5b2e;
+    --accent-soft: #fff1ec;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 5%;
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    background: var(--ink);
+    color: white;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+}
+
+.brand-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.brand-text em { color: var(--accent); }
+
+/* Container */
+.container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Error box */
+.error-box {
+    max-width: 620px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 40px 30px;
+}
+
+.error-icon {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+}
+
+.error-code {
+    font-family: 'Fraunces', serif;
+    font-size: 5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.error-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+}
+
+.error-text {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Primary */
+.btn-primary {
+    background: var(--ink);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Secondary */
+.btn-secondary {
+    background: var(--accent-soft);
+    color: var(--ink);
+    border: 1px solid #ffd4c4;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+}
+
+/* Small note */
+.note {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="brand">
+        <span class="brand-mark">B</span>
+        <span class="brand-text">Brain<em>Builder</em></span>
+    </a>
+</header>
+
+<main class="container">
+    <div class="error-box">
+        <div class="error-icon">⚠️</div>
+        <div class="error-code">500</div>
+        <div class="error-title">Something went wrong</div>
+
+        <p class="error-text">
+            We hit an unexpected issue on our side.  
+            Try refreshing the page, or come back in a moment.
+        </p>
+
+        <div class="actions">
+            <a href="{{ url_for('login.home') }}" class="btn btn-primary">
+                Go home →
+            </a>
+
+            <a href="" onclick="location.reload()" class="btn btn-secondary">
+                Refresh
+            </a>
+        </div>
+
+        <div class="note">
+            If this keeps happening, we’re probably already fixing it.
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>host_select_quiz</title>
+</head>
+
+<body>
+    <form method="post">
+        <h1>your quizes</h1>
+        {% if quizes %}
+        <select id="quizes" name="quizes">
+            {% for quiz in quizes %}
+            <option value="{{quiz.id}}">{{quiz.title}}</option>
+            {% endfor %}
+        </select><br><br>
+        <input type="submit" value="host quiz" id="host">
+        {% endif %}
+    </form>
+    <script>
+    </script>
+</body>
+
+</html>

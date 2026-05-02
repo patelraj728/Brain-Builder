@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Lobby | Brain Builder</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            
+            /* Modernized Quiz Colors */
+            --opt-a: #ff5b2e;
+            --opt-b: #2e86ff;
+            --opt-c: #10b981;
+            --opt-d: #8b5cf6;
+            
+            /* Bonus Mode Palette */
+            --bonus-bg: #fffcf0;
+            --bonus-accent: #d4af37;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--bg); 
+            color: var(--ink); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            transition: background 0.5s ease; 
+        }
+
+        body.bonus-mode { background: var(--bonus-bg); }
+
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            width: 100%; 
+            padding: 40px 24px; 
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* ═══════════════════════════════
+           REUSABLE COMPONENTS
+        ═══════════════════════════════ */
+        .card {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 48px;
+            border: 1px solid var(--line);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        body.bonus-mode .card { border-color: var(--bonus-accent); box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15); }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--bg);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); background: #000; }
+        .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ═══════════════════════════════
+           LOBBY VIEW
+        ═══════════════════════════════ */
+        .pin-display {
+            text-align: center;
+            padding: 40px;
+            background: var(--field);
+            border-radius: 20px;
+            margin: 24px 0;
+        }
+
+        .pin-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .pin-code {
+            font-family: 'Fraunces', serif;
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        .players-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 32px 0;
+        }
+
+        .player-chip {
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: popIn 0.3s ease-out;
+            border: 1px solid rgba(255, 91, 46, 0.1);
+        }
+
+        /* ═══════════════════════════════
+           QUIZ VIEW
+        ═══════════════════════════════ */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-logo { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.2rem; }
+        .brand-logo em { font-style: italic; color: var(--accent); }
+
+        .timer-ring {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--field); font-family: 'Fraunces', serif;
+            font-weight: 700; font-size: 1.2rem;
+        }
+
+        #question-text {
+            font-family: 'Fraunces', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 40px;
+            display: block;
+        }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+        
+        .option-card {
+            font-family: 'Fraunces', serif;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px; padding: 24px;
+            display: flex; align-items: center; gap: 16px;
+            font-weight: 600;
+        }
+
+        .shape {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+        }
+        .option-card:nth-child(1) .shape { background: var(--opt-a); }
+        .option-card:nth-child(2) .shape { background: var(--opt-b); }
+        .option-card:nth-child(3) .shape { background: var(--opt-c); }
+        .option-card:nth-child(4) .shape { background: var(--opt-d); }
+
+        /* ═══════════════════════════════
+           OVERLAYS
+        ═══════════════════════════════ */
+        #scoreboard-overlay, #finished-screen {
+            display: none; position: fixed; inset: 0; 
+            background: var(--bg); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px;
+        }
+        #scoreboard-overlay.visible, #finished-screen.visible { display: flex; }
+
+        .scoreboard-title { font-family: 'Fraunces', serif; font-size: 2.5rem; margin-bottom: 32px; }
+        
+        .score-row {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--surface); padding: 16px 24px;
+            border-radius: 16px; border: 1px solid var(--line);
+            margin-bottom: 12px; width: 100%; max-width: 600px;
+        }
+
+        .rank { font-family: 'Fraunces', serif; font-weight: 800; width: 40px; color: var(--muted); }
+        .score-bar-wrap { flex: 2; height: 8px; background: var(--field); border-radius: 10px; overflow: hidden; }
+        .score-bar { height: 100%; background: var(--ink); transition: width 1s ease; }
+        .score-val { font-family: 'Fraunces', serif; font-weight: 700; color: var(--accent); }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+@media (max-width: 640px) {
+    .options-grid{
+        display: flex;
+        flex-direction: column;
+        color: black;
+    }
+    .pin-code{
+        font-size: 4rem;
+        text-align: center;
+    }
+}
+    </style>
+</head>
+<body>
+
+<div id="lobby-view" class="container">
+    <div class="card">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;">Game Lobby</div>
+            <h1 style="font-family: 'Fraunces', serif; font-size: 2rem;">Quiz #{{ quiz_id }}</h1>
+        </div>
+
+        <div class="pin-display">
+            <div class="pin-label">Join with Game Pin</div>
+            <div class="pin-code">{{ code }}</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 12px;">
+            <span>Players joined</span>
+            <span id="player-count" style="color: var(--accent);">0</span>
+        </div>
+
+        <div class="players-grid" id="players-grid">
+            <div class="no-players" id="no-players-msg" style="color: var(--muted); font-style: italic;">Waiting for the squad to arrive...</div>
+        </div>
+
+        <button class="btn-primary" id="start-btn" onclick="startQuiz()">Start Game →</button>
+    </div>
+</div>
+
+<div id="quiz-view" class="container" style="display: none;">
+    <div class="card">
+        <div class="quiz-header">
+            <div class="brand-logo">Brain<em>Builder</em></div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="text-align: right;">
+                    <div style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Answers</div>
+                    <div id="answered-count" style="font-weight: 700; font-size: 1.1rem;">0 / 0</div>
+                </div>
+                <div class="timer-ring" id="timer-ring"><span id="timer-text">--</span></div>
+            </div>
+        </div>
+
+        <div class="bonus-crown" id="bonus-badge" style="display: none; text-align: center; color: var(--bonus-accent); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px;">✨ Bonus Question: 2x Points ✨</div>
+
+        <span id="question-text">Loading question...</span>
+        
+        <div class="options-grid" id="options-grid"></div>
+
+        <div style="margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;">
+            <div style="flex: 1;">
+                <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; font-weight: 600;" id="progress-label">QUESTION 0</div>
+                <div style="height: 6px; background: var(--field); border-radius: 10px; width: 200px; overflow: hidden;">
+                    <div id="progress-fill" style="height: 100%; background: var(--accent); width: 0%; transition: width 0.5s;"></div>
+                </div>
+            </div>
+            <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled style="width: auto; padding: 12px 24px;">Next →</button>
+        </div>
+    </div>
+</div>
+
+<div id="scoreboard-overlay">
+    <h2 class="scoreboard-title">Leaderboard</h2>
+    <div id="scoreboard-list" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+    <button class="btn-primary" style="max-width: 300px; margin-top: 32px;" onclick="nextQuestion()">Next Question →</button>
+</div>
+
+<div id="finished-screen">
+    <div style="font-size: 3rem; margin-bottom: 10px;">🏆</div>
+    <h1 class="scoreboard-title">Quiz Complete!</h1>
+    <div id="final-scoreboard-list" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 32px;"></div>
+    <a href="/login/home" style="text-decoration:none;"><button class="btn-primary" style="padding: 16px 40px;">Return Home</button></a>
+</div>
+
+<script>
+    var socketio = io();
+    
+    // LOBBY LOGIC
+    socketio.on("message", function(data){
+        updatePlayerList(data.name);
+    });
+
+    function updatePlayerList(names){
+        const players = names.filter(n => n !== "Host");
+        document.getElementById("player-count").innerText = players.length;
+        const grid = document.getElementById("players-grid");
+
+        if(players.length === 0){
+            grid.innerHTML = '<div class="no-players" id="no-players-msg">Waiting for players to join...</div>';
+            return;
+        }
+        grid.innerHTML = "";
+        players.forEach(function(name){
+            const chip = document.createElement("div");
+            chip.className = "player-chip";
+            chip.textContent = name;
+            grid.appendChild(chip);
+        });
+    }
+
+    function startQuiz(){
+        document.getElementById("start-btn").disabled = true;
+        socketio.emit("start_quiz");
+    }
+
+    socketio.on("host_redirect_to_live", function(){
+        document.getElementById("lobby-view").style.display = "none";
+        document.getElementById("quiz-view").style.display = "block";
+        nextQuestion();
+    });
+
+    // QUIZ LOGIC
+    let timerInterval;
+    let timeLeft = 0;
+    let totalTime = 15;
+    let totalPlayers = 0;
+    let answeredPlayers = 0;
+    let questionIndex = 0;
+    let totalQuestions = 0;
+    let currentScores = {};
+    let scoreboardShown = false;
+
+    function nextQuestion(){
+        document.getElementById("scoreboard-overlay").classList.remove("visible");
+        document.getElementById("next-btn").disabled = true;
+        document.body.classList.remove("bonus-mode");
+        document.getElementById("bonus-badge").style.display = "none";
+        answeredPlayers = 0;
+        scoreboardShown = false;
+        socketio.emit("next_question");
+    }
+
+    socketio.on("show_question", function(data){
+        questionIndex++;
+        totalQuestions = data.total_questions || totalQuestions;
+        totalPlayers = data.player_count || totalPlayers;
+        answeredPlayers = 0;
+        scoreboardShown = false;
+        
+        if(data.is_bonus){
+            document.body.classList.add("bonus-mode");
+            document.getElementById("bonus-badge").style.display = "block";
+        }
+
+        document.getElementById("question-text").innerText = data.question;
+        document.getElementById("progress-label").innerText = `QUESTION ${questionIndex} OF ${totalQuestions}`;
+        document.getElementById("progress-fill").style.width = `${(questionIndex / totalQuestions) * 100}%`;
+        
+        const shapes = ["▲","◆","●","■"];
+        const grid = document.getElementById("options-grid");
+        grid.innerHTML = "";
+        data.options.forEach(function(opt, i){
+            const card = document.createElement("div");
+            card.className = "option-card";
+            card.innerHTML = `<div class="shape">${shapes[i]}</div><span>${opt.text}</span>`;
+            grid.appendChild(card);
+        });
+
+        startTimer(data.time_limit || 15);
+        document.getElementById("next-btn").disabled = false;
+    });
+
+    function startTimer(seconds){
+        clearInterval(timerInterval);
+        totalTime = seconds;
+        timeLeft = seconds;
+        updateTimerRing();
+        timerInterval = setInterval(function(){
+            timeLeft--;
+            updateTimerRing();
+            if(timeLeft <= 0){
+                clearInterval(timerInterval);
+                if(!scoreboardShown){
+                    scoreboardShown = true;
+                    showScoreboardOverlay(currentScores);
+                }
+            }
+        }, 1000);
+    }
+
+    function updateTimerRing(){
+        const pct = (timeLeft / totalTime) * 100;
+        const color = timeLeft <= 5 ? "var(--accent)" : "var(--ink)";
+        const ring = document.getElementById("timer-ring");
+        ring.style.background = `conic-gradient(${color} ${pct}%, var(--line) 0)`;
+        document.getElementById("timer-text").innerText = timeLeft;
+    }
+
+    socketio.on("show_scoreboard", function(data){
+        currentScores = data.scores;
+        answeredPlayers = data.answered;
+        totalPlayers = data.total_players;
+        document.getElementById("answered-count").innerText = `${answeredPlayers} / ${totalPlayers}`;
+
+        if(answeredPlayers >= totalPlayers && totalPlayers > 0 && !scoreboardShown){
+            clearInterval(timerInterval);
+            scoreboardShown = true;
+            setTimeout(() => showScoreboardOverlay(currentScores), 600);
+        }
+    });
+
+    function showScoreboardOverlay(scores){
+        renderScores(scores, "scoreboard-list");
+        document.getElementById("scoreboard-overlay").classList.add("visible");
+    }
+
+    function renderScores(scores, containerId){
+        const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+        const maxScore = sorted.length > 0 ? sorted[0][1] : 1;
+        const medals = ["🥇","🥈","🥉"];
+        let html = "";
+        sorted.forEach(function([name, score], i){
+            const pct = (score / maxScore) * 100;
+            html += `
+                <div class="score-row" style="animation-delay: ${i*0.1}s">
+                    <div class="rank">${medals[i] || (i+1)}</div>
+                    <div class="player-name"><strong>${name}</strong></div>
+                    <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
+                    <div class="score-val">${score}</div>
+                </div>`;
+        });
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    socketio.on("show_scoreboard_all", function(data) {
+        currentScores = data.scores;
+        if (!scoreboardShown) {
+            clearInterval(timerInterval);
+            scoreboardShown = true;
+            showScoreboardOverlay(currentScores);
+        }
+    });
+
+    socketio.on("quiz_finished", function(data){
+        const scores = data.scores || data;
+        clearInterval(timerInterval);
+        document.getElementById("quiz-view").style.display = "none";
+        renderScores(scores, "final-scoreboard-list");
+        document.getElementById("finished-screen").classList.add("visible");
+    });
+</script>
+</body>
+</html>

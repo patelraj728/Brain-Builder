@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain Builder | Add Questions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;       /* signature warm coral */
+            --accent-soft: #fff1ec;
+            --ok: #1f8a4c;
+            --bonus-bg: #fff8e1;
+            --bonus-ink: #8a6d00;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 48px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* === Brain Builder logo === */
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .brand-mark {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            background: var(--ink);
+            color: var(--bg);
+            display: grid;
+            place-items: center;
+            position: relative;
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+        .brand-mark::after {
+            content: '';
+            position: absolute;
+            right: -3px; bottom: -3px;
+            width: 12px; height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .container {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 720px;
+            width: 100%;
+        }
+
+        .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 28px;
+            color: var(--ink);
+        }
+        h2 em { font-style: italic; color: var(--accent); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .full-width { grid-column: span 2; }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--field);
+            color: var(--ink);
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--ink);
+            background: var(--surface);
+        }
+
+        /* Segmented option-count toggle */
+        .segmented {
+            display: inline-flex;
+            background: var(--field);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+        .seg-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 18px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .seg-btn.active {
+            background: var(--ink);
+            color: var(--bg);
+        }
+        /* Hidden but functional original toggle */
+        #option-toggle { display: none; }
+
+        .bonus-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bonus-bg);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--bonus-ink);
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid #f5e6a8;
+        }
+        .bonus-wrap input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: var(--accent);
+        }
+        .bonus-wrap label { margin: 0; color: inherit; font-weight: 600; }
+
+        .actions {
+            margin-top: 32px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn:hover { opacity: 0.88; }
+
+        #addquestion {
+            background: var(--ink);
+            color: var(--bg);
+        }
+        #publish {
+            background: var(--accent);
+            color: white;
+        }
+        .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--ink);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background: var(--ok);
+}
+
+.toast.error {
+    background: #e11d48;
+}
+        .option-row.hidden { display: none; }
+
+        @media (max-width: 600px) {
+            .container { padding: 28px 22px; border-radius: 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            h2 { font-size: 1.6rem; }
+            .actions { justify-content: stretch; }
+            .actions .btn { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/login/home" class="brand" aria-label="Brain Builder home">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-text">Brain<em>Builder</em></span>
+    </a>
+
+    <div class="container">
+        <div class="eyebrow">New entry</div>
+        <h2>Add a <em>question</em></h2>
+
+        <!-- Option count segmented toggle -->
+        <div class="segmented" role="tablist" aria-label="Number of options">
+            <button type="button" class="seg-btn active" id="label-2" onclick="setOptionCount(2)">2 Options</button>
+            <button type="button" class="seg-btn" id="label-4" onclick="setOptionCount(4)">4 Options</button>
+        </div>
+        <!-- Kept for JS compatibility -->
+        <div id="option-toggle" onclick="toggleOptionCount()"></div>
+
+        <form method="post">
+            <div class="form-grid">
+                <div class="full-width">
+                    <label for="question">Question text</label>
+                    <input type="text" name="question" id="question" placeholder="What would you like to ask?" required/>
+                </div>
+
+                <div>
+                    <label for="option1">Option 1</label>
+                    <input type="text" name="option1" id="option1" required/>
+                </div>
+                <div>
+                    <label for="option2">Option 2</label>
+                    <input type="text" name="option2" id="option2" required/>
+                </div>
+                <div class="option-row hidden" id="opt3-row">
+                    <label for="option3">Option 3</label>
+                    <input type="text" name="option3" id="option3"/>
+                </div>
+                <div class="option-row hidden" id="opt4-row">
+                    <label for="option4">Option 4</label>
+                    <input type="text" name="option4" id="option4"/>
+                </div>
+
+                <div>
+                    <label for="points">Points</label>
+                    <select name="points" id="points" required>
+                        <option value="" selected disabled>Choose points</option>
+                        {% for i in range(0,101,10) %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="right_option">Correct answer</label>
+                    <select name="right_option" id="right_option" required>
+                        <option value="" disabled selected>Choose correct</option>
+                        <option value="A">Option 1</option>
+                        <option value="B">Option 2</option>
+                        <option value="C" class="opt34">Option 3</option>
+                        <option value="D" class="opt34">Option 4</option>
+                    </select>
+                </div>
+
+                <div class="full-width bonus-wrap">
+                    <input type="checkbox" name="is_bonus" value="True" id="is_bonus"/>
+                    <label for="is_bonus">Mark as bonus question ✨</label>
+                </div>
+            </div>
+
+            <div class="actions">
+                <input type="button" id="addquestion" class="btn" value="Add question" />
+                <input type="button" id="publish" class="btn" value="Publish quiz" />
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let optionCount = 2;
+        function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+        function setOptionCount(count) {
+            optionCount = count;
+            const label2 = document.getElementById('label-2');
+            const label4 = document.getElementById('label-4');
+            const opt3 = document.getElementById('opt3-row');
+            const opt4 = document.getElementById('opt4-row');
+            const opt34selects = document.querySelectorAll('.opt34');
+
+            if (count === 4) {
+                label2.classList.remove('active');
+                label4.classList.add('active');
+                opt3.classList.remove('hidden');
+                opt4.classList.remove('hidden');
+                document.getElementById('option3').required = true;
+                document.getElementById('option4').required = true;
+                opt34selects.forEach(el => el.style.display = '');
+            } else {
+                label4.classList.remove('active');
+                label2.classList.add('active');
+                opt3.classList.add('hidden');
+                opt4.classList.add('hidden');
+                document.getElementById('option3').required = false;
+                document.getElementById('option4').required = false;
+                document.getElementById('option3').value = '';
+                document.getElementById('option4').value = '';
+                opt34selects.forEach(el => el.style.display = 'none');
+                const sel = document.getElementById('right_option');
+                if (sel.value === 'C' || sel.value === 'D') sel.value = '';
+            }
+        }
+
+        function toggleOptionCount() {
+            setOptionCount(optionCount === 2 ? 4 : 2);
+        }
+
+        setOptionCount(2);
+
+        const btnadd = document.getElementById('addquestion');
+        const btnpublish = document.getElementById('publish');
+
+        btnadd.addEventListener('click', () => {
+            const payload = {
+                question: document.getElementById('question').value,
+                option1: document.getElementById('option1').value,
+                option2: document.getElementById('option2').value,
+                is_bonus: document.getElementById('is_bonus').checked,
+                points: document.getElementById('points').value,
+                correct: document.getElementById('right_option').value,
+                option_count: optionCount,
+            };
+            if (optionCount === 4) {
+                payload.option3 = document.getElementById('option3').value;
+                payload.option4 = document.getElementById('option4').value;
+            }
+
+            fetch("/create/addquestion", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message, "success");
+                ["question", "option1", "option2", "option3", "option4", "points", "right_option"].forEach(id => {
+                    document.getElementById(id).value = "";
+                });
+                document.getElementById('is_bonus').checked = false;
+            });
+        });
+
+        btnpublish.addEventListener('click', () => {
+            window.location.href = "/login/home";
+        });
+        
+    </script>
+<div id="toast" class="toast"></div>
+</body>
+</html>

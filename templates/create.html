@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain Builder | Create Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 48px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* === Brain Builder logo === */
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .brand-mark {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            background: var(--ink);
+            color: var(--bg);
+            display: grid;
+            place-items: center;
+            position: relative;
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+        .brand-mark::after {
+            content: '';
+            position: absolute;
+            right: -3px; bottom: -3px;
+            width: 12px; height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 48px 40px;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+        }
+
+        .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+        h2 em { font-style: italic; color: var(--accent); }
+
+        .sub {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .input-group { margin-bottom: 28px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--field);
+            color: var(--ink);
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--ink);
+            background: var(--surface);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 26px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--ink);
+            color: var(--bg);
+            font-family: inherit;
+            transition: opacity 0.15s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { opacity: 0.88; }
+        .btn:active { transform: translateY(1px); }
+        .btn::after {
+            content: '→';
+            font-size: 1.1rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+
+        @media (max-width: 600px) {
+            .card { padding: 36px 24px; border-radius: 16px; }
+            h2 { font-size: 1.6rem; }
+            .actions { justify-content: stretch; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/login/home" class="brand" aria-label="Brain Builder home">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-text">Brain<em>Builder</em></span>
+    </a>
+
+    <div class="card">
+        <div class="eyebrow">Step 1 of 2</div>
+        <h2>Name your <em>quiz</em></h2>
+        <p class="sub">Give it a clear title — you can add questions next.</p>
+
+        <form method="post">
+            <div class="input-group">
+                <label for="title">Quiz title</label>
+                <input type="text" name="title" id="title" placeholder="e.g. Space Exploration" required>
+            </div>
+            <div class="actions">
+                <input type="submit" id="save" class="btn" value="Next: Add questions" />
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

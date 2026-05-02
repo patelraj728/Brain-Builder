@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | Admin Studio</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --admin-bg: #fafaf7;
+            --admin-surface: #ffffff;
+            --admin-ink: #111111;
+            --admin-muted: #6b7280;
+            --admin-line: #ececec;
+            --admin-accent: #4ba0f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--admin-bg); 
+            color: var(--admin-ink); 
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT --- */
+        .admin-main {
+            flex-grow: 1;
+            margin-left: 280px; /* To account for the sidebar */
+            padding: 60px 5%;
+        }
+
+        /* --- TOPBAR --- */
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .topbar-sub {
+            color: var(--admin-muted);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .btn-logout {
+            text-decoration: none;
+            color: var(--admin-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 10px 20px;
+            border: 1px solid var(--admin-line);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* --- STATS GRID --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--admin-surface);
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid var(--admin-line);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-card h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        .stat-card p {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--admin-muted);
+        }
+
+        /* --- DASHBOARD CONTENT --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .card {
+            background: var(--admin-surface);
+            border-radius: 32px;
+            padding: 40px;
+            border: 1px solid var(--admin-line);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- TABLES --- */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .admin-table th {
+            text-align: left;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--admin-muted);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--admin-line);
+        }
+
+        .admin-table td {
+            padding: 16px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        /* --- BADGES --- */
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: capitalize;
+        }
+
+        .badge-admin { background: #eff6ff; color: #1d4ed8; }
+        .badge-user { background: #f3f4f6; color: #374151; }
+        .badge-active { background: #ecfdf5; color: #065f46; }
+
+        .see-all {
+            margin-top: auto;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--admin-accent);
+            transition: 0.2s;
+        }
+
+        .see-all:hover {
+            color: var(--admin-ink);
+            transform: translateX(5px);
+        }
+
+        code {
+            background: #f1f5f9;
+            color: #ff5b2e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'admin/_sidebar.html' %}
+
+    <div class="admin-main">
+        <header class="admin-topbar animate__animated animate__fadeInDown">
+            <div class="topbar-left">
+                <h1>Overview</h1>
+                <p class="topbar-sub">The state of Brain Builder as of today.</p>
+            </div>
+            <a href="{{ url_for('login.logout') }}" class="btn-logout">Logout</a>
+        </header>
+
+        <section class="stats-grid animate__animated animate__fadeInUp">
+            <div class="stat-card">
+                <span class="stat-icon">👥</span>
+                <div>
+                    <h2>{{ total_users }}</h2>
+                    <p>Community Members</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🧠</span>
+                <div>
+                    <h2>{{ total_quizzes }}</h2>
+                    <p>Question Banks</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">❓</span>
+                <div>
+                    <h2>{{ total_questions }}</h2>
+                    <p>Total Questions</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⚡</span>
+                <div>
+                    <h2>{{ total_sessions }}</h2>
+                    <p>Active Rounds</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+            <section class="card animate__animated animate__fadeInUp">
+                <h3>New Members</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Identity</th><th>Status</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">{{ u.name }}</div>
+                                <div style="font-size: 0.75rem; color: var(--admin-muted);">{{ u.email }}</div>
+                            </td>
+                            <td><span class="badge {{ 'badge-admin' if u.role == 'admin' else 'badge-user' }}">{{ u.role }}</span></td>
+                            <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="empty">The community is quiet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ url_for('admin.users') }}" class="see-all">View directory →</a>
+            </section>
+
+            <section class="card animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                <h3>Session Activity</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Reference</th><th>Topic</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recent_sessions %}
+                        <tr>
+                            <td><code>{{ s.room_code }}</code></td>
+                            <td>{{ s.quiz.title if s.quiz else '—' }}</td>
+                            <td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="empty">No active pulses.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ url_for('admin.sessions') }}" class="see-all">Review all sessions →</a>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

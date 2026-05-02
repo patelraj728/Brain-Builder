@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain Builder | Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            --error: #c0392b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 5%;
+            border-bottom: 1px solid var(--line);
+            background: var(--bg);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .brand-mark {
+            width: 38px; height: 38px;
+            border-radius: 11px;
+            background: var(--ink);
+            color: var(--bg);
+            display: grid;
+            place-items: center;
+            position: relative;
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+        .brand-mark::after {
+            content: '';
+            position: absolute;
+            right: -3px; bottom: -3px;
+            width: 11px; height: 11px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .login_link {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .login_link a {
+            color: var(--ink);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 6px;
+            border-bottom: 1.5px solid var(--accent);
+            padding-bottom: 1px;
+        }
+        .login_link a:hover { color: var(--accent); }
+
+        /* Main */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 56px 20px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            width: 100%;
+            max-width: 460px;
+            padding: 44px 40px;
+            border-radius: 20px;
+            position: relative;
+        }
+        
+
+        .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .header-content h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .header-content h2 em { font-style: italic; color: var(--accent); }
+
+        .header-content p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        /* Form */
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--field);
+            color: var(--ink);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--ink);
+            background: var(--surface);
+        }
+
+        .password-box { position: relative; }
+        .password-box input { padding-right: 60px; }
+        .toggle-text {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--ink);
+            color: var(--bg);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 18px;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .submit-btn:hover { opacity: 0.88; }
+        .submit-btn:active { transform: translateY(1px); }
+
+        .error-msg {
+            color: var(--error);
+            background: #fdecea;
+            border: 1px solid #f5c6c0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: center;
+        }
+        #resendContainer{
+                text-align: right;
+                font-size: small;
+                margin: 5px 7px 0 0;
+                color: var(--muted);
+        }
+        #resendOtpLink{
+                color: var(--ink);
+                text-decoration: none;
+                font-weight: 600;
+                margin-left: 6px;
+                border-bottom: 1.5px solid var(--accent);
+        }
+        .resend-link {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit;
+            transition: color 0.2s;
+        }
+        .resend-link:hover { color: var(--ink); }
+        @media (max-width: 480px) {
+            .navbar { padding: 16px 20px; }
+            .card { padding: 32px 24px; border-radius: 16px; }
+            .header-content h2 { font-size: 1.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="brand" aria-label="Brain Builder home">
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-text">Brain<em>Builder</em></span>
+        </a>
+        <div class="login_link">
+            Already a member?<a href="/">Login</a>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="card">
+            <div class="eyebrow">Get started</div>
+            <div class="header-content">
+                <h2>Create <em>account</em></h2>
+                <p>Start your journey of knowledge today.</p>
+            </div>
+
+            <form id="signupForm" onsubmit="return false;">
+    
+    <div class="input-group">
+        <label>Full name</label>
+        <input type="text" id="name" placeholder="Raj Patel" required>
+    </div>
+
+    <div class="input-group">
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+        <div class="password-box">
+            <input type="password" id="password" placeholder="••••••••" required>
+            <span class="toggle-text" id="togglePassword">Show</span>
+        </div>
+    </div>
+
+    <!-- OTP FIELD -->
+    <div class="input-group" id="otpGroup" style="display:none;">
+        <label>Enter OTP</label>
+        <input type="text" id="otp" placeholder="6-digit OTP">
+    </div>
+
+    <!-- ERROR BOX -->
+    <div id="errorBox" class="error-msg" style="display:none;"></div>
+
+    <button type="button" class="submit-btn" id="actionBtn">Get OTP</button>
+    <div id="resendContainer"></div>
+
+</form>
+
+            <p class="footer-note">By signing up, you agree to our Terms &amp; Privacy.</p>
+        </div>
+    </main>
+
+    <script>
+const toggle = document.getElementById('togglePassword');
+const pwd = document.getElementById('password');
+const form = document.getElementById('signupForm');
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault(); // 💥 THIS stops reload properly
+});
+toggle.addEventListener('click', () => {
+    const isHidden = pwd.type === 'password';
+    pwd.type = isHidden ? 'text' : 'password';
+    toggle.textContent = isHidden ? 'Hide' : 'Show';
+});
+
+const btn = document.getElementById('actionBtn');
+const errorBox = document.getElementById('errorBox');
+
+let otpStage = false;
+
+function showError(msg) {
+    errorBox.style.display = 'block';
+    errorBox.textContent = msg;
+}
+
+function clearError() {
+    errorBox.style.display = 'none';
+}
+
+const handleclick = async (isResend = false) => {
+    console.log("otpStage:", otpStage, "isResend:", isResend);
+    clearError();
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    // STEP 1: SEND OTP
+    const otpVisible = document.getElementById('otpGroup').style.display === 'block';
+
+    if (!otpVisible || isResend)
+    {
+        if (!name || !email || !password) {
+            showError("Please fill all fields");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Sending OTP...";
+
+        try {
+            const res = await fetch('/login/signup-send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ name, email, password })
+            });
+
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                document.getElementById('otpGroup').style.display = 'block';
+                btn.textContent = 'Get Started';
+                otpStage = true;
+
+                // Add resend message
+                const resendContainer = document.getElementById('resendContainer');
+                resendContainer.innerHTML = `
+                    Didn't receive OTP? 
+                    <button type="button" class="resend-link" onclick="handleclick(true)">
+                            Resend Code
+                    </button>
+                `;
+            } else {
+                showError(data.message);
+                btn.textContent = "Get OTP";
+            }
+
+        } catch (err) {
+            showError("Something went wrong");
+            btn.textContent = "Get OTP";
+        }
+
+        btn.disabled = false;
+    }
+// STEP 2: VERIFY OTP
+    else {
+        const otp = document.getElementById('otp').value.trim();
+
+        if (!otp) {
+            showError("Please enter OTP");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Verifying...";
+
+        try {
+            const res = await fetch('/login/signup-verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ otp })
+            });
+
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                window.location.href = '/'; // redirect after success
+            } else {
+                showError(data.message);
+                btn.textContent = "Get Started";
+            }
+
+        } catch (err) {
+            showError("Something went wrong");
+            btn.textContent = "Get Started";
+        }
+
+        btn.disabled = false;
+    }
+}
+btn.addEventListener('click', () => handleclick());
+</script>
+
+
+</body>
+</html>

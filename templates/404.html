@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 | Page Not Found</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+:root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #ececec;
+    --accent: #ff5b2e;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar (same as yours) */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 5%;
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    background: var(--ink);
+    color: white;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+}
+
+.brand-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.brand-text em { color: var(--accent); }
+
+/* Main */
+.container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* 404 Content */
+.error-box {
+    max-width: 600px;
+}
+
+.error-code {
+    font-family: 'Fraunces', serif;
+    font-size: 6rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.error-title {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.error-text {
+    color: var(--muted);
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+/* Button */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--ink);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* subtle illustration */
+.ghost {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="brand">
+        <span class="brand-mark">B</span>
+        <span class="brand-text">Brain<em>Builder</em></span>
+    </a>
+</header>
+
+<main class="container">
+    <div class="error-box">
+        <div class="ghost">👻</div>
+        <div class="error-code">404</div>
+        <div class="error-title">Page not found</div>
+        <p class="error-text">
+            Looks like this page wandered off. Let’s get you back to learning.
+        </p>
+
+        <a href="{{ url_for('login.home') }}" class="btn">
+            Go back home →
+        </a>
+    </div>
+</main>
+
+</body>
+</html>

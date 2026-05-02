@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Session Audit | Admin Studio</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --admin-bg: #fafaf7;
+            --admin-surface: #ffffff;
+            --admin-ink: #111111;
+            --admin-muted: #6b7280;
+            --admin-line: #ececec;
+            --admin-accent: #4ba0f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--admin-bg); 
+            color: var(--admin-ink); 
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-main {
+            flex-grow: 1;
+            margin-left: 280px; 
+            padding: 60px 5%;
+        }
+
+        /* --- HEADER --- */
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .room-code {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #ff5b2e;
+        }
+
+        .topbar-sub {
+            color: var(--admin-muted);
+            font-weight: 500;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* --- STATUS BADGES --- */
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--admin-bg);
+            border: 1px solid var(--admin-line);
+        }
+        .badge-completed { color: #10b981; border-color: #d1fae5; background: #ecfdf5; }
+        .badge-waiting { color: #f59e0b; border-color: #fef3c7; background: #fffbeb; }
+
+        /* --- INFO CARDS (SCOREBOARD STYLE) --- */
+        .session-info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--admin-line);
+            border: 1px solid var(--admin-line);
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 48px;
+        }
+
+        .info-card {
+            background: var(--admin-surface);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--admin-muted);
+        }
+
+        .info-val {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* --- DATA CARDS --- */
+        .card {
+            background: var(--admin-surface);
+            border-radius: 32px;
+            padding: 40px;
+            border: 1px solid var(--admin-line);
+            margin-bottom: 32px;
+        }
+
+        .card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- TABLES --- */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th {
+            text-align: left;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--admin-muted);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--admin-line);
+        }
+
+        .admin-table td {
+            padding: 16px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        /* Leaderboard Specifics */
+        .rank-cell {
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            width: 60px;
+        }
+
+        .gold-row { color: #d4af37; }
+        .silver-row { color: #94a3b8; }
+        .bronze-row { color: #cd7f32; }
+
+        .player-name { font-weight: 700; color: var(--admin-ink); }
+
+        .correct-tick { color: #10b981; font-weight: 800; }
+        .wrong-cross { color: #ef4444; font-weight: 800; }
+
+        .btn-back-link {
+            text-decoration: none;
+            color: var(--admin-muted);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: 0.2s;
+        }
+
+        .btn-back-link:hover { color: var(--admin-ink); transform: translateX(-5px); }
+
+        @media (max-width: 1000px) {
+            .session-info-grid { grid-template-columns: repeat(2, 1fr); }
+            .admin-main { margin-left: 0; padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'admin/_sidebar.html' %}
+
+    <div class="admin-main">
+        <header class="admin-topbar animate__animated animate__fadeInDown">
+            <div class="topbar-left">
+                <a href="{{ url_for('admin.sessions') }}" class="btn-back-link">← All Sessions</a>
+                <h1>Session <span class="room-code">{{ session.room_code }}</span></h1>
+                <div class="topbar-sub">
+                    <span>{{ session.quiz.title if session.quiz else 'Untitled Quiz' }}</span>
+                    <span class="badge badge-{{ session.status }}">{{ session.status }}</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="session-info-grid animate__animated animate__fadeInUp">
+            <div class="info-card">
+                <span class="info-label">Facilitator</span>
+                <span class="info-val">{{ session.host.name if session.host else 'System' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Engagement</span>
+                <span class="info-val">{{ results|length }} Players</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Start Time</span>
+                <span class="info-val">{{ session.started_at.strftime('%H:%M %b %d') if session.started_at else '—' }}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Duration</span>
+                <span class="info-val">
+                    {% if session.started_at and session.ended_at %}
+                        {{ ((session.ended_at - session.started_at).seconds // 60) }} min
+                    {% else %}
+                        Ongoing
+                    {% endif %}
+                </span>
+            </div>
+        </section>
+
+        <section class="card animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+            <h3>Final Standings</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Rank</th><th>Player Identity</th><th>Final Score</th><th>Timestamp</th></tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr class="{{ 'gold-row' if loop.index == 1 else 'silver-row' if loop.index == 2 else 'bronze-row' if loop.index == 3 else '' }}">
+                        <td class="rank-cell">
+                            {% if loop.index == 1 %}01{% elif loop.index == 2 %}02{% elif loop.index == 3 %}03{% else %}{{ loop.index }}{% endif %}
+                        </td>
+                        <td class="player-name">{{ r.user.name if r.user else 'Anonymous' }}</td>
+                        <td><strong>{{ r.total_score }}</strong></td>
+                        <td style="color: var(--admin-muted)">{{ r.played_at.strftime('%H:%M:%S') if r.played_at else '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="empty">No performance data found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        {% if answers %}
+        <section class="card animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+            <h3>Response Audit</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Player</th><th>Question Excerpt</th><th>Outcome</th><th>Earned</th><th>Time</th></tr>
+                </thead>
+                <tbody>
+                    {% for a in answers %}
+                    <tr>
+                        <td class="player-name">{{ a.player_name }}</td>
+                        <td style="color: var(--admin-muted); font-size: 0.85rem;">
+                            {{ a.question.question_text[:50] }}...
+                        </td>
+                        <td>
+                            {% if a.is_correct %}
+                                <span class="correct-tick">✓ Correct</span>
+                            {% else %}
+                                <span class="wrong-cross">✕ Incorrect</span>
+                            {% endif %}
+                        </td>
+                        <td><strong>+{{ a.points_earned }}</strong></td>
+                        <td style="font-family: monospace; font-size: 0.8rem;">{{ a.answered_at.strftime('%H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+    </div>
+</body>
+</html>

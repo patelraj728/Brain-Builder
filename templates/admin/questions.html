@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Questions | Admin Studio</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --admin-bg: #fafaf7;
+            --admin-surface: #ffffff;
+            --admin-ink: #111111;
+            --admin-muted: #6b7280;
+            --admin-line: #ececec;
+            --admin-accent: #4ba0f0;
+            --admin-bonus: #d4af37;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--admin-bg); 
+            color: var(--admin-ink); 
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-main {
+            flex-grow: 1;
+            margin-left: 280px; 
+            padding: 60px 5%;
+        }
+
+        /* --- HEADER --- */
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .topbar-sub {
+            color: var(--admin-muted);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .btn-add {
+            background: var(--admin-ink);
+            color: #4ba0f0;
+            padding: 14px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* --- QUESTION CARDS --- */
+        .question-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .q-card {
+            background: var(--admin-surface);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid var(--admin-line);
+            transition: border-color 0.3s;
+        }
+
+        .q-card:hover { border-color: var(--admin-accent); }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .q-identity { display: flex; align-items: center; gap: 12px; }
+
+        .q-index {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--admin-accent);
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--admin-bg);
+            border: 1px solid var(--admin-line);
+        }
+
+        .badge-bonus { color: var(--admin-bonus); border-color: #fde68a; background: #fffdf2; }
+
+        .q-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+            margin-bottom: 24px;
+            max-width: 90%;
+        }
+
+        /* --- OPTIONS DISPLAY --- */
+        .options-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px dotted var(--admin-line);
+        }
+
+        .opt-item {
+            font-size: 0.9rem;
+            color: var(--admin-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .opt-item.is-correct {
+            color: var(--admin-ink);
+            font-weight: 700;
+        }
+
+        .opt-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--admin-line);
+        }
+
+        .is-correct .opt-dot { background: #10b981; box-shadow: 0 0 0 4px #dcfce7; }
+
+        /* --- ACTIONS --- */
+        .q-actions { display: flex; gap: 8px; }
+
+        .btn-icon {
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            border: 1px solid var(--admin-line);
+            background: white;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-icon:hover { background: var(--admin-bg); border-color: var(--admin-ink); }
+        .btn-delete:hover { background: #fff1f2; border-color: #ef4444; }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            text-align: center;
+            padding: 100px 0;
+            background: var(--admin-surface);
+            border-radius: 32px;
+            border: 2px dashed var(--admin-line);
+        }
+
+        .empty-icon { font-size: 3rem; display: block; margin-bottom: 20px; }
+
+        @media (max-width: 800px) {
+            .admin-main { margin-left: 0; padding: 40px 20px; }
+            .q-header { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'admin/_sidebar.html' %}
+
+    <div class="admin-main">
+        <header class="admin-topbar animate__animated animate__fadeInDown">
+            <div class="topbar-left">
+                <h1>Question Bank</h1>
+                <p class="topbar-sub">{{ quiz.title }} — <strong>{{ questions|length }}</strong> total entries</p>
+            </div>
+            <a href="{{ url_for('admin.add_question', quiz_id=quiz.id) }}" class="btn-add">
+                <span>Add New Question</span>
+            </a>
+        </header>
+
+        <section class="question-feed">
+            {% if questions %}
+                {% for q in questions %}
+                <div class="q-card animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+                    <div class="q-header">
+                        <div class="q-identity">
+                            <span class="q-index">0{{ loop.index }}</span>
+                            <span class="badge {{ 'badge-bonus' if q.is_bonus else '' }}">
+                                {{ '⭐ Bonus' if q.is_bonus else 'Regular' }}
+                            </span>
+                            <span class="badge">{{ q.points }} Pts</span>
+                            {% if q.category %}
+                                <span class="badge">{{ q.category }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="q-actions">
+                            <a href="{{ url_for('admin.edit_question', question_id=q.id) }}" class="btn-icon" title="Edit">✏️</a>
+                            <form action="{{ url_for('admin.delete_question', question_id=q.id) }}" method="POST" style="display:inline" onsubmit="return confirm('Archive this question permanently?')">
+                                <button type="submit" class="btn-icon btn-delete" title="Delete">🗑</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="q-text">{{ q.question_text }}</div>
+
+                    <div class="options-display">
+                        {% for opt in q.options %}
+                        <div class="opt-item {{ 'is-correct' if opt.is_correct else '' }}">
+                            <div class="opt-dot"></div>
+                            <span>{{ opt.option_text }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state animate__animated animate__fadeIn">
+                    <span class="empty-icon">📂</span>
+                    <p style="font-weight: 700; margin-bottom: 10px;">The archive is empty.</p>
+                    <p style="color: var(--admin-muted); margin-bottom: 30px;">Start building your quiz by adding your first prompt.</p>
+                    <a href="{{ url_for('admin.add_question', quiz_id=quiz.id) }}" class="btn-add" style="display: inline-flex;">+ Add Question</a>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

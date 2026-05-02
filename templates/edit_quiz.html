@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit {{ quiz.title }} | Brain Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --line: #ececec;
+            --field: #f6f6f3;
+            --accent: #ff5b2e;
+            --accent-soft: #fff1ec;
+            --correct-bg: #e8f5ed;
+            --correct-ink: #1f6b3a;
+            --correct-line: #b8dcc4;
+            --bonus-bg: #fff8e1;
+            --bonus-ink: #8a6d00;
+            --danger-bg: #fdecea;
+            --danger-ink: #b91c1c;
+        }
+
+        body { background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 5%;
+            background: var(--bg);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-mark {
+            width: 38px; height: 38px;
+            border-radius: 11px;
+            background: var(--ink);
+            color: var(--bg);
+            display: grid;
+            place-items: center;
+            position: relative;
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+        .brand-mark::after {
+            content: '';
+            position: absolute;
+            right: -3px; bottom: -3px;
+            width: 11px; height: 11px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+        .brand-text {
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .brand-text em { font-style: italic; color: var(--accent); }
+
+        .btn-back {
+            text-decoration: none;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 9px;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 0.85rem;
+            background: var(--surface);
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-back:hover { border-color: var(--ink); color: var(--accent); }
+
+        /* Layout */
+        .container { max-width: 820px; margin: 32px auto; padding: 0 20px; }
+
+        .card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 14px;
+            border: 1px solid var(--line);
+        }
+
+        /* Title form */
+        .title-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .title-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            background: var(--field);
+            color: var(--ink);
+        }
+        .title-form input:focus { outline: none; border-color: var(--ink); background: var(--surface); }
+
+        .btn-save {
+            padding: 11px 20px;
+            background: var(--ink);
+            color: var(--bg);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-family: inherit;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn-save:hover { opacity: 0.88; }
+        .btn-save:active { transform: translateY(1px); }
+
+        /* Question card */
+        .question-card { position: relative; padding-top: 28px; }
+        .q-number {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--ink);
+            color: var(--bg);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+        }
+        .q-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            color: var(--ink);
+        }
+
+        .options-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .opt {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border: 1px solid var(--line);
+            background: var(--field);
+            color: var(--ink);
+        }
+        .opt.correct {
+            background: var(--correct-bg);
+            border-color: var(--correct-line);
+            color: var(--correct-ink);
+            font-weight: 600;
+        }
+
+        .q-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+        .meta-chip {
+            background: var(--field);
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            letter-spacing: 0.04em;
+        }
+        .meta-chip.bonus {
+            background: var(--bonus-bg);
+            color: var(--bonus-ink);
+            border-color: #f5e6a8;
+        }
+
+        .q-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .btn-sm {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            background: var(--surface);
+            color: var(--ink);
+            font-family: inherit;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-sm:hover { border-color: var(--ink); }
+        .btn-sm-edit:hover { color: var(--accent); }
+        .btn-sm-delete { color: var(--danger-ink); }
+        .btn-sm-delete:hover { background: var(--danger-bg); border-color: var(--danger-ink); }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 48px 20px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            .navbar { padding: 14px 18px; }
+            .options-list { grid-template-columns: 1fr; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="brand" aria-label="Brain Builder home">
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-text">Brain<em>Builder</em></span>
+        </a>
+        <a href="{{ url_for('login.profile') }}" class="btn-back">← Back to Profile</a>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <form method="post" class="title-form">
+                <input type="text" name="title" value="{{ quiz.title }}" placeholder="Quiz title">
+                <button type="submit" class="btn-save">Save title</button>
+            </form>
+        </div>
+
+        {% for q in questions %}
+        <div class="card question-card">
+            <div class="q-number">Q{{ loop.index }}</div>
+            <div class="q-text">{{ q.question_text }}</div>
+            <div class="options-list">
+                {% for opt in q.options %}
+                <div class="opt {{ 'correct' if opt.is_correct else '' }}">
+                    {{ opt.option_text }}{% if opt.is_correct %} ✓{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="q-meta">
+                <span class="meta-chip">{{ q.points }} PTS</span>
+                {% if q.is_bonus %}<span class="meta-chip bonus">★ BONUS</span>{% endif %}
+            </div>
+            <div class="q-actions">
+                <a href="{{ url_for('login.edit_question', quiz_id=quiz.id, question_id=q.id) }}" class="btn-sm btn-sm-edit">Edit</a>
+                <form method="post" action="{{ url_for('login.delete_question', quiz_id=quiz.id, question_id=q.id) }}" style="display:inline;" onsubmit="return confirm('Delete this question?')">
+                    <button type="submit" class="btn-sm btn-sm-delete">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="card empty">No questions yet.</div>
+        {% endfor %}
+    </main>
+</body>
+</html>
