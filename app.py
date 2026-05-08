@@ -22,7 +22,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__)
-csrf = CSRFProtect(app)
+csrf = CSRFProtect()
+csrf.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
@@ -59,7 +60,12 @@ app.register_blueprint(create_bp)
 app.register_blueprint(host_bp)
 app.register_blueprint(join_bp)
 app.register_blueprint(admin_bp)
-
+csrf.exempt(admin_bp)
+csrf.exempt(user_bp)
+csrf.exempt(solo_bp)
+csrf.exempt(create_bp)
+csrf.exempt(host_bp)
+csrf.exempt(join_bp)
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 # app.run(host="0.0.0.0", port=5000)
