@@ -1,6 +1,5 @@
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 from database import db
-from models import user
 from extensions import socketio
 from login.routes import user_bp
 from solo_quiz.routes import solo_bp
@@ -9,22 +8,34 @@ from host_quiz.routes import host_bp
 from join_quiz.routes import join_bp
 from admin.routes import admin_bp
 from models.user import User
-import host_quiz.socket_events 
-import join_quiz.socket_events
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash,check_password_hash
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import LoginManager
 from flask_login import login_user
 from models.user import User
+import os
+from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
 
 
+load_dotenv()
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rajkumar@localhost/brain_builder'
+csrf = CSRFProtect(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'secret_key'
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 10,
+    'max_overflow': 20,
+    'pool_timeout': 30,
+    'pool_recycle': 1800,
+}
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 socketio.init_app(app)
-
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -32,7 +43,13 @@ login_manager.init_app(app)
 
 login_manager.login_view = 'login'
 
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
 @login_manager.user_loader
+
 def load_user(user_id):
     return User.query.get(int(user_id))
 
@@ -96,4 +113,4 @@ def internal_error(error):
 def forbidden(error):
     return render_template("403.html"), 403
 if __name__ == '__main__':
-    socketio.run(app,debug=True)
+    socketio.run(app)

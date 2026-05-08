@@ -7,9 +7,9 @@ class Results(db.Model):
     __tablename__ = 'results'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
-    session_id = db.Column(db.Integer, db.ForeignKey('quiz_sessions.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False,index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False,index=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('quiz_sessions.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=True,index=True)
     total_score = db.Column(db.Integer, nullable=False)
     played_at = db.Column(db.DateTime, default=datetime.utcnow)
 

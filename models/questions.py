@@ -8,7 +8,7 @@ class Question(db.Model):
     quiz_id = db.Column(
         db.Integer,
         db.ForeignKey('quizzes.id', ondelete='CASCADE', onupdate='CASCADE'),
-        nullable=False
+        nullable=False,index=True
     )
     question_text = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(100), nullable=True)

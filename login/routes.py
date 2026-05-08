@@ -19,15 +19,15 @@ from flask_login import login_required,logout_user
 user_bp = Blueprint('login',__name__,url_prefix='/login')
 
     
-GOOGLE_CLIENT_ID = "your id"
-GOOGLE_CLIENT_SECRET = 'your secret'
+GOOGLE_CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
+GOOGLE_CLIENT_SECRET = os.environ['GOOGLE_CLIENT_SECRET']
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
 
-EMAIL = "patelraj29112000@gmail.com"
-PASSWORD = "ttdn fvon luys infg"  # from Google
+EMAIL = os.environ["EMAIL_USER"]
+PASSWORD = os.environ["EMAIL_PASS"] # from Google
 
 
 
@@ -55,7 +55,11 @@ def signup_send_otp():
     # Check if user already exists
     if User.query.filter_by(email=email).first():
         return {"status": "error", "message": "Email already registered"}
-
+    if len(password) < 8:
+        return {
+        "status": "error",
+        "message": "Password must be at least 8 characters"
+        }
     otp = str(random.randint(100000, 999999))
 
     session['signup_otp'] = otp
@@ -81,7 +85,16 @@ def signup_send_otp():
 @user_bp.route('/signup-verify-otp', methods=['POST'])
 def signup_verify_otp():
     user_otp = request.form.get('otp')
+    attempts = session.get('otp_attempts', 0)
 
+    if attempts >= 5:
+        return {
+        "status": "error",
+        "message": "Too many attempts"
+        }
+
+    session['otp_attempts'] = attempts + 1
+    
     if time.time() > session.get('signup_expiry', 0):
         return {"status": "error", "message": "OTP expired"}
 

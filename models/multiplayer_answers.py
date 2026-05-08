@@ -9,12 +9,12 @@ class MultiplayerAnswer(db.Model):
     session_id = db.Column(
         db.Integer,
         db.ForeignKey('quiz_sessions.id', ondelete='CASCADE', onupdate='CASCADE'),
-        nullable=False
+        nullable=False,index=True
     )
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id', ondelete='SET NULL', onupdate='CASCADE'),
-        nullable=True
+        nullable=True,index=True
     )
     player_name = db.Column(db.String(100), nullable=False)
     question_id = db.Column(
