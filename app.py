@@ -35,7 +35,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_recycle': 1800,
 }
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-socketio.init_app(app)
+socketio.init_app(app,cors_allowed_origins="*")
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = os.getenv('FLASK_ENV') == 'production'
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
