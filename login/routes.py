@@ -158,7 +158,7 @@ def google_callback():
         "grant_type": "authorization_code"
     }
 
-    token_response = requests.post(GOOGLE_TOKEN_URL, data=token_data)
+    token_response = requests.post(GOOGLE_TOKEN_URL, data=token_data,timeout=10)
     token_json = token_response.json()
 
     access_token = token_json.get("access_token")
@@ -360,7 +360,7 @@ def verify_email_otp():
         flash("Invalid OTP. Please try again.", "error")
         return redirect(url_for('login.verify_email_page', show_otp=1, email=session.get('email'),otp=user_otp))
     
-@user_bp.route('newpassword',methods=['GET','POST'])
+@user_bp.route('/newpassword',methods=['GET','POST'])
 def newpassword():
     if request.method == 'POST':
         email = session.get('email')

@@ -1,3 +1,5 @@
+from gevent import monkey
+monkey.patch_all()
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 from database import db
 from extensions import socketio
