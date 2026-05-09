@@ -14,7 +14,7 @@ import os
 import random
 import smtplib
 import time
-from flask_login import login_required,logout_user
+from flask_login import login_required,logout_user,login_user
 
 user_bp = Blueprint('login',__name__,url_prefix='/login')
 
@@ -194,9 +194,13 @@ def google_callback():
         db.session.commit()
 
     # Login user
-    print(type(user.id))
+    login_user(user)
+
     session['email'] = email
     session['id'] = user.id
+    session['role'] = user.role
+    session['logged_in'] = True
+
     return redirect(url_for('login.home'))
 
 
