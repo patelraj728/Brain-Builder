@@ -128,7 +128,7 @@ def home():
 
 @user_bp.route('/google')
 def google_login():
-    redirect_uri = "https://majesty-crumpled-hypnotic.ngrok-free.dev/login/google/callback"
+    redirect_uri = "https://brain-builder.onrender.com/login/google/callback"
     params = {
         "client_id": GOOGLE_CLIENT_ID,
         "redirect_uri": redirect_uri,
